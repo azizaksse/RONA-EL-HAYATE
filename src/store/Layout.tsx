@@ -49,7 +49,7 @@ function Header() {
   return (
     <header className={"hdr" + (scrolled ? " scrolled" : "")}>
       <div className="wrap">
-        <Link className="logo" to="/"><Logo s={40} /><span><b>{tx(S.name)}</b><small>{tx(S.tagline)}</small></span></Link>
+        <Link className="logo" to="/"><Logo s={48} /></Link>
         <nav className="nav" aria-label={t.catTitle}>
           {navCats.map((c) => <Link key={c.slug} to={"/?cat=" + encodeURIComponent(c.slug) + "#catalog"}>{tx(c.name)}</Link>)}
         </nav>
@@ -71,7 +71,7 @@ function Footer() {
   return (
     <footer className="ftr"><div className="wrap">
       <div className="cols">
-        <div className="col"><Link className="logo" to="/" style={{ color: "#fff", display: 'flex', alignItems: 'center' }}><Logo s={48} /><b style={{marginLeft: '10px'}}>{tx(S.name)}</b></Link><span className="c" style={{ lineHeight: 1.7, maxWidth: 320 }}>{t.about}</span></div>
+        <div className="col"><Link className="logo" to="/" style={{ color: "#fff", display: 'flex', alignItems: 'center' }}><Logo s={56} /></Link><span className="c" style={{ lineHeight: 1.7, maxWidth: 320 }}>{t.about}</span></div>
         <div className="col"><b>{t.fShop}</b>{data.categories.filter((c) => !c.parent).slice(0, 5).map((c) => <Link key={c.slug} to={"/?cat=" + encodeURIComponent(c.slug) + "#catalog"}>{tx(c.name)}</Link>)}</div>
         <div className="col"><b>{t.fHelp}</b><Link to="/#how">{t.fHow}</Link><Link to="/delivery">{n.delivery}</Link><Link to="/returns">{n.returns}</Link><Link to="/faq">{n.faq}</Link><Link to="/cart">{t.cart}</Link></div>
         <div className="col"><b>{t.fContact}</b><Link to="/contact">{n.contact}</Link><a href={"tel:" + cleanPhone(S.phone)} dir="ltr" style={{ alignSelf: "flex-start" }}>{S.phone}</a>{wa && <a href={"https://wa.me/" + wa} target="_blank" rel="noopener">WhatsApp</a>}<Link to="/about">{n.about}</Link></div>

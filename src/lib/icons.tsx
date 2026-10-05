@@ -30,8 +30,8 @@ export function Icon({ n, s = 22, className }: { n: IconName; s?: number; classN
 }
 
 export function Logo({ s }: { s: number }) {
-  // Use a relative height to prevent layout shifts, maintaining original width proportion
-  return <img src="/logo.png" alt="Ronaq El Hayat" width={Math.round(s * 1.8)} height={s} style={{ objectFit: 'contain' }} />;
+  // logo.png is a wide landscape image (~2.5:1 ratio)
+  return <img src="/logo.png" alt="رونق الحياة" height={s} width={Math.round(s * 2.5)} style={{ objectFit: 'contain', display: 'block' }} />;
 }
 
 export function Sparkle({ l, t, s, c, cls = "" }: { l: string; t: string; s: number; c: string; cls?: string }) {

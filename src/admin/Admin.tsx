@@ -169,7 +169,7 @@ function Shell(p: { token: string; lang: Lang; me: Me; settings: any; geo: Geo; 
     <Ctx.Provider value={ctx}>
       <div className="ad">
         <aside className="side">
-          <a className="logo" href="/" target="_blank"><Logo s={36} /><span><b>{storeName || "Ronaq"}</b><small>{t.title}</small></span></a>
+          <a className="logo" href="/" target="_blank"><Logo s={44} /></a>
           <div className="tabs" style={{ display: "flex", flexDirection: "column", gap: 6 }}>{tabs}</div>
           <div className="foot">
             <span>{me.name} · {(t.roles as Record<string, string>)[me.role]}</span>
