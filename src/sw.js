@@ -38,8 +38,15 @@ self.addEventListener("fetch", (e) => {
   if (url.pathname.startsWith("/api/")) return;
 
   if (req.mode === "navigate" && sameOrigin) {
-    e.respondWith(withTimeout(fetch(req), 4000).then((res) => { if (res.ok) caches.open(VERSION).then((c) => c.put("/", res.clone())); return res; })
-      .catch(() => caches.match("/").then((hit) => hit || fetch(req))));
+    e.respondWith(
+      withTimeout(fetch(req), 4000).then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(VERSION).then((c) => c.put("/", copy));
+        }
+        return res;
+      }).catch(() => caches.match("/").then((hit) => hit || fetch(req)))
+    );
     return;
   }
 

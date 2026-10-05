@@ -114,13 +114,16 @@ export const deleteProduct = mutation({
   },
 });
 
-/** Permanently removes a product and its stored images. Use with caution — irreversible. */
+/** Permanently removes a product, its stock-move history, and its stored images. Irreversible. */
 export const hardDeleteProduct = mutation({
   args: { token: v.string(), id: v.id("products") },
   handler: async (ctx, { token, id }) => {
     await requireMember(ctx, token, "catalog");
     const p = await ctx.db.get(id);
     if (!p) return;
+    // Delete all stock-move history rows that reference this product
+    const moves = await ctx.db.query("stockMoves").withIndex("by_product", (q) => q.eq("productId", id)).collect();
+    for (const m of moves) await ctx.db.delete(m._id);
     // Delete all images from storage
     for (const img of p.images) {
       try { await ctx.storage.delete(img); } catch { /* ignore if already gone */ }
@@ -139,6 +142,9 @@ export const wipeAllProducts = mutation({
     }
     const products = await ctx.db.query("products").collect();
     for (const p of products) {
+      // Delete stock-move history first
+      const moves = await ctx.db.query("stockMoves").withIndex("by_product", (q) => q.eq("productId", p._id)).collect();
+      for (const m of moves) await ctx.db.delete(m._id);
       for (const img of p.images) {
         try { await ctx.storage.delete(img); } catch { /* ignore */ }
       }
