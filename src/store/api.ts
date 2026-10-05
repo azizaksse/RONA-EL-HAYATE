@@ -18,9 +18,19 @@ export function communes(code: string | number) {
   return getJSON<[string, string?][]>("/data/communes/" + k + ".json", 12000).then((l) => (communeCache[k] = l));
 }
 
+declare const __BUILD_ID__: string;
 /** Stale-while-revalidate: show the last catalog instantly, refresh it in the background. */
-const CACHE_KEY = "ronaq_sf_v2";
+const CACHE_KEY = "ronaq_sf_" + (typeof __BUILD_ID__ !== "undefined" ? __BUILD_ID__ : "dev");
 export function loadStore(onFresh: (d: StoreData) => void): Promise<StoreData> {
+  // Purge any old catalog keys from previous builds
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("ronaq_sf_") && k !== CACHE_KEY) {
+        localStorage.removeItem(k);
+      }
+    }
+  } catch { /* ignore */ }
   const cached = lsGet<{ at: number; d: StoreData } | null>(CACHE_KEY, null);
   const url = DEMO ? "/data/demo.json" : SITE + "/api/storefront";
   // The first request may already be in flight from index.html (see earlyCatalog in vite.config.ts).

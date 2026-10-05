@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __CONVEX_URL__: JSON.stringify(env.CONVEX_URL || ""),
       __CONVEX_SITE__: JSON.stringify(env.CONVEX_SITE_URL || ""),
+      __BUILD_ID__: JSON.stringify(Date.now().toString(36)),
     },
     server: { port: 5173 },
     build: { target: ["es2020", "chrome80", "safari14"] },
