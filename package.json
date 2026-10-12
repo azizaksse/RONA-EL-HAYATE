@@ -11,6 +11,7 @@
     "test": "vitest run",
     "typecheck": "tsc -p convex && tsc -p .",
     "build": "vite build",
+    "build:vercel": "node scripts/vercel-build.mjs",
     "preview": "vite preview"
   },
   "license": "UNLICENSED",
