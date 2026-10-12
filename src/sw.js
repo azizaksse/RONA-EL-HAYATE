@@ -1,5 +1,5 @@
 /* Ronaq El Hayat — offline-friendly cache for slow/unstable mobile networks.
-   Pages: network first (4 s), cached app shell if the network is down.
+   Pages: always from the network, cached app shell only if the network is down.
    Built assets (hashed names, never change): cache first.
    Catalog (/api/storefront): network first, cache if the network is down.
    Orders, all POST requests and the admin panel always go to the network.
@@ -20,10 +20,6 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
-function withTimeout(p, ms) {
-  return new Promise((resolve, reject) => { const t = setTimeout(() => reject(new Error("timeout")), ms); p.then((r) => { clearTimeout(t); resolve(r); }, (e) => { clearTimeout(t); reject(e); }); });
-}
-
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
@@ -39,7 +35,8 @@ self.addEventListener("fetch", (e) => {
 
   if (req.mode === "navigate" && sameOrigin) {
     e.respondWith(
-      withTimeout(fetch(req), 4000).then((res) => {
+      // No timeout: on a slow network a timeout served the previous deploy's page. Cache is only for offline.
+      fetch(req, { cache: "no-store" }).then((res) => {
         if (res.ok) {
           const copy = res.clone();
           caches.open(VERSION).then((c) => c.put("/", copy));

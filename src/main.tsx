@@ -23,6 +23,8 @@ if ("serviceWorker" in navigator && import.meta.env.PROD && location.protocol ==
       if (reg.waiting) {
         reg.waiting.postMessage({ type: "SKIP_WAITING" });
       }
+      // Tabs left open (common on phones) pick up a new deploy when the user comes back.
+      document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") reg.update().catch(() => {}); });
     }).catch(() => {});
   });
 
