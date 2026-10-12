@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
     define: {
       __CONVEX_URL__: JSON.stringify(env.CONVEX_URL || ""),
       __CONVEX_SITE__: JSON.stringify(env.CONVEX_SITE_URL || ""),
+      __FB_PIXEL__: JSON.stringify(env.FB_PIXEL_ID || ""),
+      __TT_PIXEL__: JSON.stringify(env.TIKTOK_PIXEL_ID || ""),
       __BUILD_ID__: JSON.stringify(Date.now().toString(36)),
     },
     server: { port: 5173 },

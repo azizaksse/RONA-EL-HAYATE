@@ -11,7 +11,7 @@ const KEY_FIELDS: Record<string, { label: string; fields: { key: string; label: 
   yalidine: { label: "Yalidine", fields: [{ key: "YALIDINE_API_ID", label: "API ID" }, { key: "YALIDINE_API_TOKEN", label: "API Token" }, { key: "YALIDINE_BASE_URL", label: "Base URL (proxy)", placeholder: "https://api.yalidine.app/v1", optional: true }, { key: "YALIDINE_PROXY_SECRET", label: "Proxy Secret", optional: true }] },
   zr_express: { label: "ZR Express", fields: [{ key: "ZR_API_KEY", label: "API Key" }, { key: "ZR_TENANT_ID", label: "Tenant ID" }] },
   noest: { label: "NOEST Express", fields: [{ key: "NOEST_API_TOKEN", label: "API Token" }, { key: "NOEST_USER_GUID", label: "User GUID" }] },
-  ecotrack: { label: "EcoTrack", fields: [{ key: "ECOTRACK_BASE_URL", label: "Base URL", placeholder: "https://dhd.ecotrack.dz" }, { key: "ECOTRACK_TOKEN", label: "API Token" }, { key: "ECOTRACK_NAME", label: "Carrier Name", placeholder: "DHD", optional: true }] },
+  ecotrack: { label: "World Express (EcoTrack)", fields: [{ key: "ECOTRACK_BASE_URL", label: "Base URL", placeholder: "https://world-express.ecotrack.dz" }, { key: "ECOTRACK_TOKEN", label: "API Token" }, { key: "ECOTRACK_NAME", label: "Carrier Name", placeholder: "World Express", optional: true }] },
   meta: { label: "Meta Conversions API", fields: [{ key: "META_ACCESS_TOKEN", label: "Access Token" }, { key: "META_PIXEL_ID", label: "Pixel ID" }, { key: "META_TEST_EVENT_CODE", label: "Test Event Code", optional: true }] },
 };
 

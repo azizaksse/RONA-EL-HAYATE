@@ -1,3 +1,4 @@
+import { FB_PIXEL, TT_PIXEL } from "../lib/config";
 import { lsGet, lsSet } from "../lib/storage";
 import type { StoreInfo } from "./types";
 
@@ -20,7 +21,7 @@ export function attribution() {
 let fbStarted = false;
 let ttStarted = false;
 export function initPixels(S: StoreInfo) {
-  const fb = S.fbPixelId, tt = S.tiktokPixelId;
+  const fb = S.fbPixelId || FB_PIXEL, tt = S.tiktokPixelId || TT_PIXEL;
   if (fb && !fbStarted) {
     fbStarted = true;
     /* eslint-disable */

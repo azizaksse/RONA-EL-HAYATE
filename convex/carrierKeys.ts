@@ -38,9 +38,9 @@ export const CARRIER_KEY_FIELDS: Record<string, { label: string; fields: { key: 
   ecotrack: {
     label: "EcoTrack",
     fields: [
-      { key: "ECOTRACK_BASE_URL", label: "Base URL", placeholder: "https://dhd.ecotrack.dz" },
+      { key: "ECOTRACK_BASE_URL", label: "Base URL", placeholder: "https://world-express.ecotrack.dz" },
       { key: "ECOTRACK_TOKEN", label: "API Token" },
-      { key: "ECOTRACK_NAME", label: "Carrier Name", placeholder: "DHD", optional: true },
+      { key: "ECOTRACK_NAME", label: "Carrier Name", placeholder: "World Express", optional: true },
     ],
   },
   meta: {
