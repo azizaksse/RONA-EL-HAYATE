@@ -135,7 +135,8 @@ export const cancelShipment = action({
     const o = await ctx.runQuery(internal.orders.forDispatch, { id });
     if (!o?.carrier || !o.tracking) throw new ConvexError({ code: "invalid", message: "This order has no shipment" });
     if (o.status !== "shipped") throw new ConvexError({ code: "invalid", message: "Only parcels still in transit can be cancelled" });
-    const c = getCarrier(o.carrier);
+    const dbKeys = await ctx.runQuery(internal.carrierKeys.allRaw, {});
+    const c = getCarrier(o.carrier, dbKeys);
     if (!c.cancel) throw new ConvexError({ code: "unsupported", message: `${c.label} doesn't allow cancelling by API — cancel it in their dashboard` });
     try { await c.cancel(o.tracking, o.carrierParcelId); }
     catch (e: any) { throw new ConvexError({ code: "carrier", message: e.message }); }
