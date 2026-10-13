@@ -3,7 +3,8 @@
  *   Lead            order placed on the site (deduplicated with the browser pixel via event_id)
  *   Purchase        order confirmed by phone (value = order total)
  *   OrderDelivered  parcel delivered (custom event, usable for custom conversions / audiences)
- * Env: META_ACCESS_TOKEN, META_PIXEL_ID (or the pixel id in settings), optional META_TEST_EVENT_CODE, META_API_VERSION.
+ * Keys: META_ACCESS_TOKEN, META_PIXEL_ID (or the pixel id in settings), optional META_TEST_EVENT_CODE — from Convex env
+ * vars or the admin's Delivery → API Keys → Meta (env wins). Optional env META_API_VERSION.
  */
 import { v } from "convex/values";
 import { internalAction, internalQuery } from "./_generated/server";
@@ -22,17 +23,23 @@ export const eventContext = internalQuery({
     const o = await ctx.db.get(id);
     if (!o) return null;
     const s = await getSettings(ctx);
-    return { o, pixel: process.env.META_PIXEL_ID || s.fbPixelId || null };
+    const row = await ctx.db.query("carrierKeys").withIndex("by_carrier", (q) => q.eq("carrier", "meta")).first();
+    const k = (row?.keys ?? {}) as Record<string, string>;
+    return {
+      o,
+      pixel: process.env.META_PIXEL_ID || k.META_PIXEL_ID || s.fbPixelId || null,
+      token: process.env.META_ACCESS_TOKEN || k.META_ACCESS_TOKEN || "",
+      testCode: process.env.META_TEST_EVENT_CODE || k.META_TEST_EVENT_CODE || "",
+    };
   },
 });
 
 export const sendOrderEvent = internalAction({
   args: { orderId: v.id("orders"), event: v.union(v.literal("Lead"), v.literal("Purchase"), v.literal("OrderDelivered")) },
   handler: async (ctx, { orderId, event }) => {
-    const token = process.env.META_ACCESS_TOKEN;
     const c = await ctx.runQuery(internal.meta.eventContext, { id: orderId });
-    if (!token || !c?.pixel) return;
-    const { o } = c;
+    if (!c?.token || !c.pixel) return;
+    const { o, token } = c;
     const n = splitName(o.name);
     const user_data: Record<string, unknown> = {
       ph: [await sha(e164(o.phone))],
@@ -63,7 +70,7 @@ export const sendOrderEvent = internalAction({
         },
       }],
     };
-    if (process.env.META_TEST_EVENT_CODE) payload.test_event_code = process.env.META_TEST_EVENT_CODE;
+    if (c.testCode) payload.test_event_code = c.testCode;
     const ver = process.env.META_API_VERSION || "v23.0";
     const res = await fetch(`https://graph.facebook.com/${ver}/${c.pixel}/events?access_token=${encodeURIComponent(token)}`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
