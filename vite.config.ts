@@ -12,7 +12,7 @@ import { readFileSync } from "node:fs";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
-    plugins: [react(), serviceWorker(), earlyCatalog(env.CONVEX_SITE_URL || ""), siteMeta(env.SITE_URL || "")],
+    plugins: [react(), serviceWorker(), earlyCatalog(env.CONVEX_SITE_URL || ""), earlyPixel(env.FB_PIXEL_ID || ""), siteMeta(env.SITE_URL || "")],
     define: {
       __CONVEX_URL__: JSON.stringify(env.CONVEX_URL || ""),
       __CONVEX_SITE__: JSON.stringify(env.CONVEX_SITE_URL || ""),
@@ -38,6 +38,23 @@ function earlyCatalog(site: string): Plugin {
       return [
         { tag: "link", attrs: { rel: "preconnect", href: s, crossorigin: "" }, injectTo: "head-prepend" },
         { tag: "script", children: `if(!/^\\/admin/.test(location.pathname)){window.__sf=fetch(${JSON.stringify(s + "/api/storefront")},{credentials:"omit",cache:"no-store"}).then(function(r){if(!r.ok)throw r.status;return r.json()});window.__sf.catch(function(){})}`, injectTo: "head-prepend" },
+      ];
+    },
+  };
+}
+
+/**
+ * Standard Meta pixel snippet in the HTML (outside /admin), so PageView fires before the app loads
+ * and pixel checkers find it. src/store/pixels.ts skips re-initialising this same pixel.
+ */
+function earlyPixel(id: string): Plugin {
+  const px = id.replace(/\D/g, "");
+  return {
+    name: "ronaq-early-pixel",
+    transformIndexHtml() {
+      if (!px) return [];
+      return [
+        { tag: "script", children: `if(!/^\\/admin/.test(location.pathname)){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${px}');fbq('track','PageView')}`, injectTo: "head" },
       ];
     },
   };

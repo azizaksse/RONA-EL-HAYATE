@@ -22,11 +22,12 @@ let fbStarted = false;
 let ttStarted = false;
 export function initPixels(S: StoreInfo) {
   const fb = S.fbPixelId || FB_PIXEL, tt = S.tiktokPixelId || TT_PIXEL;
-  if (fb && !fbStarted) {
+  // The build pixel may already be running from index.html (see earlyPixel in vite.config.ts).
+  if (fb && !fbStarted && !(fb === FB_PIXEL && window.fbq)) {
     fbStarted = true;
     /* eslint-disable */
     (function (f: any, b: Document, e: string, v: string) { if (f.fbq) return; const n: any = (f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); }); if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = "2.0"; n.queue = []; const t = b.createElement(e) as HTMLScriptElement; t.async = true; t.src = v; const s = b.getElementsByTagName(e)[0]; s.parentNode!.insertBefore(t, s); })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-    window.fbq("init", fb); window.fbq("track", "PageView");
+    window.fbq("init", fb); window.fbq("trackSingle", fb, "PageView");
     /* eslint-enable */
   }
   if (tt && !ttStarted) {
