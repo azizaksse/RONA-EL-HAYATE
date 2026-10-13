@@ -2,9 +2,9 @@ import { DEMO, SITE } from "../lib/config";
 import { lsGet, lsSet } from "../lib/storage";
 import type { StoreData } from "./types";
 
-export function getJSON<T = any>(url: string, ms = 15000): Promise<T> {
+export function getJSON<T = any>(url: string, ms = 15000, cache: RequestCache = "default"): Promise<T> {
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ms);
-  return fetch(url, { credentials: "omit", signal: ctl.signal }).then(
+  return fetch(url, { credentials: "omit", cache, signal: ctl.signal }).then(
     (r) => { clearTimeout(timer); if (!r.ok) throw new Error(String(r.status)); return r.json(); },
     (e) => { clearTimeout(timer); throw e; },
   );
@@ -19,7 +19,7 @@ export function communes(code: string | number) {
 }
 
 declare const __BUILD_ID__: string;
-/** Stale-while-revalidate: show the last catalog instantly, refresh it in the background. */
+/** Stale-while-revalidate: show the last catalog instantly, always refetch it so admin edits show on the next load. */
 const CACHE_KEY = "ronaq_sf_" + (typeof __BUILD_ID__ !== "undefined" ? __BUILD_ID__ : "dev");
 export function loadStore(onFresh: (d: StoreData) => void): Promise<StoreData> {
   // Purge any old catalog keys from previous builds
@@ -35,9 +35,9 @@ export function loadStore(onFresh: (d: StoreData) => void): Promise<StoreData> {
   const url = DEMO ? "/data/demo.json" : SITE + "/api/storefront";
   // The first request may already be in flight from index.html (see earlyCatalog in vite.config.ts).
   const early = (window as any).__sf as Promise<StoreData> | undefined; (window as any).__sf = undefined;
-  const fresh = () => (early && !DEMO ? early.catch(() => getJSON<StoreData>(url, 15000)) : getJSON<StoreData>(url, 15000)).then((d) => { lsSet(CACHE_KEY, { at: Date.now(), d }); return d; });
+  const fresh = () => (early && !DEMO ? early.catch(() => getJSON<StoreData>(url, 15000, "no-store")) : getJSON<StoreData>(url, 15000, "no-store")).then((d) => { lsSet(CACHE_KEY, { at: Date.now(), d }); return d; });
   if (cached && cached.d) {
-    if (Date.now() - cached.at > 60000) fresh().then(onFresh, () => {});
+    fresh().then(onFresh, () => {});
     return Promise.resolve(cached.d);
   }
   return fresh();

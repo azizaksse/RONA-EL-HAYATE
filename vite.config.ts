@@ -37,7 +37,7 @@ function earlyCatalog(site: string): Plugin {
       if (!s) return [];
       return [
         { tag: "link", attrs: { rel: "preconnect", href: s, crossorigin: "" }, injectTo: "head-prepend" },
-        { tag: "script", children: `if(!/^\\/admin/.test(location.pathname)){window.__sf=fetch(${JSON.stringify(s + "/api/storefront")},{credentials:"omit"}).then(function(r){if(!r.ok)throw r.status;return r.json()});window.__sf.catch(function(){})}`, injectTo: "head-prepend" },
+        { tag: "script", children: `if(!/^\\/admin/.test(location.pathname)){window.__sf=fetch(${JSON.stringify(s + "/api/storefront")},{credentials:"omit",cache:"no-store"}).then(function(r){if(!r.ok)throw r.status;return r.json()});window.__sf.catch(function(){})}`, injectTo: "head-prepend" },
       ];
     },
   };

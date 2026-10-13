@@ -41,7 +41,7 @@ for (const path of ["/api/storefront", "/api/order", "/api/abandon", "/api/desks
 http.route({
   path: "/api/storefront",
   method: "GET",
-  handler: httpAction(async (ctx, req) => json(req, await ctx.runQuery(api.catalog.storefront, {}), 200, { "Cache-Control": "public, max-age=30" })),
+  handler: httpAction(async (ctx, req) => json(req, await ctx.runQuery(api.catalog.storefront, {}), 200, { "Cache-Control": "no-cache" })),
 });
 
 http.route({
